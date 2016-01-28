@@ -10,6 +10,20 @@
 // WS   /changes
 ```
 
+### Changes
+
+```
+// Create message
+cMsg = RecSet.create(),
+
+// Update message
+uMsg = RecSet.update(cMsg.entity_id, {title: "things", description: "stuff"})
+
+// Delete message
+dMsg = RecSet.remove(cMsg.entity_id)
+
+```
+
 ### Interface
 
 ```

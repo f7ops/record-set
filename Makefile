@@ -6,6 +6,6 @@ run: build
 	node ./bundle.js
 
 clean:
-	rm bundle.js
+	rm -f bundle.js
 
 .PHONY: build

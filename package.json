@@ -9,8 +9,10 @@
   "author": "Will O'Brien <will.obrien@dibit.co>",
   "license": "None",
   "dependencies": {
+    "node-uuid": "^1.4.7",
     "protobufjs": "^5.0.1",
-    "swarm-stamp": "^1.0.14"
+    "swarm-stamp": "^1.0.14",
+    "wolfy87-eventemitter": "^4.3.0"
   },
   "devDependencies": {
     "babel-core": "^5.0.0",

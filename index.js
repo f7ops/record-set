@@ -7,7 +7,11 @@
 // POST /changes
 // WS   /changes
 
-import ProtoBuf from 'protobufjs';
+import ProtoBuf from 'protobufjs'
+import Timestamp from './src/timestamp.js'
+import RecordSet from './src/record-set.js'
+
+console.log(Timestamp("snth"));
 
 let nodeDef = require("raw!./proto/node.proto");
 let builder = ProtoBuf.loadProto(nodeDef, "node.proto");
@@ -20,6 +24,6 @@ console.log(n);
 // console.log(n.encode().toArrayBuffer());
 console.log(n.encode().toBase64());
 
-var wstream = fs.createWriteStream('test.bin')
-wstream.write(n.encode());
-wstream.end();
+var x;
+console.log(x = new RecordSet());
+export default RecordSet
