@@ -8,4 +8,7 @@ run: build
 clean:
 	rm -f bundle.js
 
-.PHONY: build
+test:
+	ava -v
+
+.PHONY: build clean run test
