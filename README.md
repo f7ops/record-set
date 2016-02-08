@@ -1,4 +1,35 @@
 
+# Record Set
+
+ { a, b, c } <== [ c, u, u, r, c, c, u ...
+
+ c - create message
+ u - update message
+ r - remove message
+
+### Modify the collection
+
+### Subscribe to changes
+
+### Connect set to persistence
+
+### Update set from persistent store
+
+var set = Recordset();
+set.create()
+
+
+
+
+```
+var x = Recordset();
+x.
+```
+
+
+
+
+
 # Data Struct Server
 
 ### URI APIs used

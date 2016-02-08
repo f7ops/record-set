@@ -4,7 +4,6 @@ import { uuid } from 'node-uuid'
 
 function createMessage(){
   console.warn('unimplemented')
-
 }
 
 function updateMessage(){
