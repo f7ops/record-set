@@ -6,15 +6,16 @@ var EventEmitter2 = require('eventemitter2').EventEmitter2,
     encode = RecordPack.toString,
     decode = RecordPack.fromString;
 
-findById = function(coll, id){
-  return _.find(coll, function(el){ return (el.id == id); });
-};
-
 genFoldp = function(){
   var previous = {
     _value: [],
     objRecords: {}
   };
+
+  var findById = function(coll, id){
+    return _.find(coll, function(el){ return (el.id == id); });
+  };
+
 
   var create = function(record, prev){
     if (findById(prev._value, record.entity_id)) {
@@ -60,7 +61,6 @@ genFoldp = function(){
 
   return function(record){
     if (! _.isNil(record)) {
-      console.log("Making changes for record.")
       switch (record.type) {
         case "create":
           create(record, previous);
@@ -82,11 +82,26 @@ function RecordSet(){
   this.foldp = genFoldp();
   this.ee = new EventEmitter2();
   this.builder = new RecordPack.Builder();
-  this._value = Immutable.List();
+  this.changes = {
+    local: {
+      pipe: function(fn){
+        this.ee.on('local', function(data){
+          fn(data);
+        });
+      }.bind(this)
+    },
+    auth: {
+      pipe: function(fn){
+        this.ee.on('auth', function(data){
+          fn(data);
+        });
+      }.bind(this)
+    }
+  };
 }
 
 RecordSet.prototype.value = function(){
-  return this._value;
+  return this.foldp();
 };
 
 RecordSet.prototype.on = function(ev, fn){
@@ -109,9 +124,26 @@ RecordSet.prototype.create = function(props){
     changes.push(this.builder.buildUpdateRecord(c1.entity_id, k, v));
   }.bind(this));
 
-  this.apply(encode(changes));
+  this.apply(encode(changes), false);
 
   return c1.entity_id;
+};
+
+var findById = function(coll, id){
+  return coll.find(function(el){ return (el.get('id') == id); });
+};
+
+RecordSet.prototype.update = function(id, props) {
+  if(_.isNil(findById(this.value(), id))){
+    throw "Cannot update nonexistent id '" +id+ "'.";
+  }
+
+  var changes = [];
+  _.forOwn(props, function(v, k, obj){
+    changes.push(this.builder.buildUpdateRecord(id, k, v));
+  }.bind(this));
+
+  this.apply(encode(changes), false);
 };
 
 RecordSet.prototype.apply = function(updates, authoritative){
@@ -119,14 +151,15 @@ RecordSet.prototype.apply = function(updates, authoritative){
 
   var previousValue = this.foldp();
   if (authoritative) {
-    // notify on.changes.auth
+    this.ee.emit('auth', updates);
   } else {
-    // notify on.changes.local
+    this.ee.emit('local', updates);
   }
 
   _.each(decode(updates), function(record){
     this.foldp(record);
   }.bind(this));
+
 
   var nextValue = this.foldp();
   if (! nextValue.equals(previousValue)) {
