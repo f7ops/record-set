@@ -49,13 +49,10 @@ genFoldp = function(){
     var el = findById(prev._value, record.entity_id);
     el[record.key] = record.value;
     objectRecord[record.key] = record.timestamp;
-
   };
 
   var destroy = function(record, prev){
-    var objectRecord = prev.objRecords[record.entity_id];
-    objectRecord[record.entity_id] = {_destroyed: true};
-
+    prev.objRecords[record.entity_id] = { _destroyed: true };
     _.remove(prev._value, function(el){ return el.id == record.entity_id; });
   };
 
@@ -144,6 +141,16 @@ RecordSet.prototype.update = function(id, props) {
   }.bind(this));
 
   this.apply(encode(changes), false);
+};
+
+RecordSet.prototype.destroy = function(id){
+  if (! _.isString(id)) {
+    throw "Identifier must be a string.";
+  }
+
+  var change = this.builder.buildDestroyRecord(id);
+
+  this.apply(encode(change), false);
 };
 
 RecordSet.prototype.apply = function(updates, authoritative){

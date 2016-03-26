@@ -1,6 +1,7 @@
 
 var test = require('tape'),
     RecordSet = require('./index.js').RecordSet,
+    encode = require('record-pack').toString,
     Immutable = require('immutable'),
     sinon = require('sinon'),
     _ = require('lodash');
@@ -100,8 +101,25 @@ test('#create does not need values', function(t){
   
 });
 
-// TODO -- this
-// test('#create event noted in local changes stream', function(t){});
+test('#create event noted in local changes stream', function(t){
+
+  var spy = sinon.spy(),
+      set = new RecordSet();
+
+  set.changes.local.pipe(spy);
+  var cid = set.create({"things": "stuff"});
+
+  t.ok(spy.calledOnce, 'listener called exectly once');
+
+  var arg = spy.firstCall.args[0];
+
+  t.ok(_.isString(arg), 'called with string');
+
+  // Assert local create/update is 2 lines long (1 for create, 1 for property)
+  t.equal(arg.split("\n").length, 2, 'Two updates in event');
+  t.end();
+
+});
 
 test('#update throws if entity does not exist', function(t){
 
@@ -223,11 +241,104 @@ test('#update fires a local change, even if value is the same', function(t){
 
 });
 
-// test('#destroy fires a change event', function(t){});
-// test('#destroy event noted in local changes stream', function(t){});
-// test('#destroy changes value', function(t){});
-// test('#updates do not cause destroyed objects to reappear', function(t){});
-// test('#destroy is idempotent', function(t){});
+test('#destroy fires a change event, when destroying', function(t){
+
+  var spy = sinon.spy(),
+      set = new RecordSet(),
+      cid = set.create();
+
+  set.on('change', spy);
+  set.destroy(cid);
+
+  t.ok(spy.calledOnce, 'listener called exectly once');
+  t.ok(set.value().equals(spy.firstCall.args[0]), 'value matches expectation');
+  t.end();
+
+});
+
+test('#destroy doesnt fire a change event, when nothing to destroy', function(t){
+
+  var spy = sinon.spy(),
+      set = new RecordSet();
+
+  set.on('change', spy);
+  set.destroy("aoeu-aoeu-aoeu");
+
+  t.ok(! spy.called, 'listener not called');
+  t.ok(set.value().equals(Immutable.List()), 'value matches expectation');
+  t.end();
+
+});
+
+test('#destroy throws if anything other than string is passed', function(t){
+
+  var set = new RecordSet();
+
+  t.throws(function(){ set.destroy(53); }, /Identifier/);
+  t.throws(function(){ set.destroy({}); }, /Identifier/);
+  t.throws(function(){ set.destroy([]); }, /Identifier/);
+
+  t.end();
+
+});
+
+test('#destroy event noted in local changes stream', function(t){
+
+  var spy = sinon.spy(),
+      set = new RecordSet(),
+      cid = set.create({"herp": "derp"});
+
+  set.changes.local.pipe(spy);
+  set.destroy(cid);
+
+  t.ok(spy.called);
+  t.end();
+
+});
+
+
+test('#destroy changes value', function(t){
+
+  var set = new RecordSet(),
+      cid = set.create({"herp": "derp"}),
+      prev = set.value();
+
+  set.destroy(cid);
+
+  t.ok(! prev.equals(set.value()));
+  t.ok(Immutable.List().equals(set.value()));
+  t.end();
+
+});
+
+test('#updates do not cause destroyed objects to reappear', function(t){
+
+  var set = new RecordSet(),
+      cid = set.create();
+
+  set.destroy(cid);
+  var u1 = set.builder.buildUpdateRecord(cid, "herp", "merp");
+
+  set.apply(encode(u1));
+
+  t.ok(Immutable.List().equals(set.value()));
+  t.end();
+
+});
+
+test('#destroy is idempotent', function(t){
+
+  var set = new RecordSet(),
+      cid = set.create();
+
+  set.destroy(cid);
+  set.destroy(cid);
+  set.destroy(cid);
+
+  t.ok(Immutable.List().equals(set.value()));
+  t.end();
+
+});
 
 test('#on throws if non-"change" type is used', function(t){
   var set = new RecordSet();
