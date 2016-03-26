@@ -7,9 +7,15 @@
     "test": "node test.js"
   },
   "author": "Will O'Brien <will.obrien@dibit.co>",
-  "license": "None",
-  "dependencies": {},
+  "license": "Apache 2.0",
+  "dependencies": {
+    "eventemitter2": "^1.0.0",
+    "immutable": "^3.7.6",
+    "lodash": "^4.6.1",
+    "record-pack": "0.0.3"
+  },
   "devDependencies": {
+    "sinon": "^1.17.3",
     "tape": "^4.5.1"
   }
 }

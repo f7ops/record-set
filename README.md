@@ -13,7 +13,7 @@ var RecordSet = require('record-set'),
     set = new RecordSet(base = {});
 
 // Hide record generation / convenience
-set.add({things: "things", stuff: "stuff"}) // => id
+set.create({things: "things", stuff: "stuff"}) // => id
 set.update(id, {stuff: "things"})
 set.remove(id);
 
