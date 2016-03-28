@@ -1,12 +1,12 @@
 {
-  "name": "set2",
+  "name": "record-set",
   "version": "0.0.2",
-  "description": "Kafka-backed set",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "node test.js"
   },
-  "author": "Will O'Brien <will.obrien@dibit.co>",
+  "author": "Will O'Brien",
   "license": "Apache 2.0",
   "dependencies": {
     "eventemitter2": "^1.0.0",
