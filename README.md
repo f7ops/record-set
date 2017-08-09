@@ -7,36 +7,49 @@
  u - update message
  r - remove message
 
+Changes can be created with [`record-pack`](https://github.com/will-ob/record-pack).
 
 ```
 var RecordSet = require('record-set'),
-    set = new RecordSet(base = {});
+    set = new RecordSet();
 
-// Hide record generation / convenience
-set.create({things: "things", stuff: "stuff"}) // => id
-set.update(id, {stuff: "things"})
-set.remove(id);
+// Apply a change from 'record-pack'
+set.apply([ ... ])
+  => return self
 
-// Core
-set.apply(changeString, local = false)
-set.value()
+// Object representation
+set.toJS()
+  => { ... }
+set.toImmutableJs()
+  => Immutable.js hashmap
+set.toRecords();
+  => Array of records required to rebuild set
 
-// Event stuff
-set.on('change', function(){})
-set.changes.applied // TODO -- probably not this..
-set.changes.local
+// RecordPack accessible for convenience
+//   dont forget to `apply` changes!
+var b = new RecordSet.RecordPack.Builder();
 
-// TODO -- base backup method (probably all auth/local changes taken as authoritative)
+b.create()
+  => c1
+b.update(id, "d", 4);
+  => u1
+b.update(id, "e", 4);
+  => u2
+b.destroy(id)
+  => d1
+
+set.apply([c1, u1, u2, d1]);
 ```
 
-Note: base-backups can just be applied using `apply`.
+#### Make Changes to Set
 
+`apply` -- changes, in the form of RecordPack records, can update the set.
 
+#### Display
 
-### Base backups
-
-Base backups are just a compact version of the world at a particular point. They do not include the out-dated records that have since been usurped.
-
+`toJS`
+`toImmutable`
+`toRecords`
 
 License
 -------
