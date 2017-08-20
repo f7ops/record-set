@@ -7,7 +7,7 @@
  u - update message
  r - remove message
 
-Changes can be created with [`record-pack`](https://github.com/will-ob/record-pack).
+Changes can be created with [`record-pack`](https://github.com/f7ops/record-pack).
 
 ```
 var RecordSet = require('record-set'),
