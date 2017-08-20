@@ -12,7 +12,7 @@
     "eventemitter2": "^1.0.0",
     "immutable": "^3.7.6",
     "lodash": "^4.17.4",
-    "record-pack": "0.0.5"
+    "record-pack": "0.1.0"
   },
   "devDependencies": {
     "chai": "^4.1.1",
